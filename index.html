@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Máy Tính Tỉ Số Nén Động Cơ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .calculator-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    .result-box {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .form-label {
+      font-weight: 600;
+    }
+    .info-icon {
+      cursor: pointer;
+      color: #6c757d;
+    }
+    .formula-display {
+      font-family: monospace;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="calculator-container">
+    <h1 class="text-center mb-4">Máy Tính Tỉ Số Nén Động Cơ</h1>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Tỉ Số Nén Tĩnh</h5>
+          </div>
+          <div class="card-body">
+
+            <div class="mb-3">
+              <label for="bore" class="form-label">Đường kính xilanh (b) (mm):</label>
+              <input type="number" id="bore" v-model="bore" class="form-control" step="0.1" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="stroke" class="form-label">Hành trình piston (s) (mm):</label>
+              <input type="number" id="stroke" v-model="stroke" class="form-control" step="0.1" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="gasketThickness" class="form-label">Độ dày gioăng nắp máy (Độ dày miếng ron) (mm):</label>
+              <input type="number" id="gasketThickness" v-model="gasketThickness" class="form-control" step="0.01" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="gasketBoreDiameter" class="form-label">Đường kính lỗ gioăng (g) (mm):</label>
+              <input type="number" id="gasketBoreDiameter" v-model="gasketBoreDiameter" class="form-control" step="0.1" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="deckHeight" class="form-label">Khoảng hở nắp máy (Hụt mặt lòng) (c) (mm):</label>
+              <input type="number" id="deckHeight" v-model="deckHeight" class="form-control" step="0.1" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="clearanceVolume" class="form-label">Thể tích buồng cháy (Bao nhiêu nước trong cái đầu) (cc):</label>
+              <input type="number" id="clearanceVolume" v-model="clearanceVolume" class="form-control" step="0.1" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="pistonDomeVolume" class="form-label">Thể tích piston (Piston volume) (cc):</label>
+              <input type="number" id="pistonDomeVolume" v-model="pistonDomeVolume" class="form-control" step="0.1">
+              <small class="text-muted">Âm nếu đỉnh lồi, dương nếu đỉnh lõm</small>
+            </div>
+            
+            <div class="result-box">
+              <h5>Tỉ Số Nén Tĩnh: {{ staticCompressionRatio ? staticCompressionRatio.toFixed(2) : '0.00' }}:1</h5>
+              <div class="formula-display">
+                TSN = (Thể tích quét + Thể tích buồng cháy) / Thể tích buồng cháy
+              </div>
+              <p class="mt-2 mb-0"><small>Thể tích quét: {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</small></p>
+              <p class="mt-1 mb-0"><small>Thể tích buồng cháy: {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Tỉ Số Nén Động</h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="intakeClosingPoint" class="form-label">1. Điểm đóng xupap nạp (Intake valve closing point) (độ sau ĐCD):</label>
+              <input type="number" id="intakeClosingPoint" v-model="manualIntakeClosingPoint" class="form-control" step="1" min="0" max="90">
+              <small class="text-muted">Giá trị từ 0 đến 90 độ sau ĐCD</small>
+            </div>
+            <div class="mb-3">
+              <label for="connectingRodLength" class="form-label">2. Chiều dài tay dên (Rod length) (mm):</label>
+              <input type="number" id="connectingRodLength" v-model="connectingRodLength" class="form-control" step="0.1" min="0">
+            </div>
+            <div class="mb-3">
+              <label for="adjustedStroke" class="form-label">3. Hành trình hiệu dụng (Adjusted stroke) (mm):</label>
+              <input type="number" id="adjustedStroke" v-model="adjustedStroke" class="form-control" step="0.1" min="0" :disabled="autoCalculateAdjustedStroke">
+              <div class="form-check mt-1">
+                <input class="form-check-input" type="checkbox" id="autoCalculateStroke" v-model="autoCalculateAdjustedStroke" checked>
+                <label class="form-check-label" for="autoCalculateStroke">
+                  Tự động tính từ điểm đóng xupap nạp
+                </label>
+              </div>
+              <small class="text-muted">Khoảng cách từ piston đến ĐCT tại thời điểm đóng xupap nạp</small>
+            </div>
+            
+            <div class="result-box">
+              <h5>Tỉ Số Nén Động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</h5>
+              <div class="formula-display">
+                TSND = (Thể tích quét hiệu dụng + Thể tích buồng cháy) / Thể tích buồng cháy
+              </div>
+              
+              <div class="mt-3">
+                <h6>Thứ tự tính toán:</h6>
+                <ol class="mb-3">
+                  <li><small>Điểm đóng xupap nạp: {{ intakeClosingPoint }} độ sau ĐCD</small></li>
+                  <li><small>Vị trí piston tại điểm đóng: {{ pistonPositionAtIntakeClosing ? pistonPositionAtIntakeClosing.toFixed(2) : '0.00' }} mm từ ĐCT</small></li>
+                  <li><small>Hành trình hiệu dụng = Vị trí piston tại điểm đóng: {{ adjustedStroke ? adjustedStroke.toFixed(2) : '0.00' }} mm</small></li>
+                  <li><small>Thể tích quét hiệu dụng (mỗi xilanh): {{ effectiveVolume ? effectiveVolume.toFixed(2) : '0.00' }} cc</small></li>
+                  <li><small>Tỉ số nén động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</small></li>
+                </ol>
+              </div>
+              
+              <p class="mt-1 mb-0"><small>Thể tích buồng cháy: {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</small></p>
+              
+              <button class="btn btn-sm btn-info mt-2" @click="showDebugInfo = !showDebugInfo">{{ showDebugInfo ? 'Ẩn' : 'Hiện' }} thông tin chi tiết</button>
+              <div v-if="showDebugInfo" class="mt-2 p-2 bg-light">
+                <p class="mb-1"><small>Thể tích buồng cháy gốc: {{ clearanceVolume }} cc</small></p>
+                <p class="mb-1"><small>Thể tích gioăng: {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</small></p>
+                <p class="mb-1"><small>Thể tích khoảng hở nắp máy: {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</small></p>
+                <p class="mb-1"><small>Thể tích piston: {{ pistonDomeVolume }} cc ({{ pistonDomeVolume > 0 ? 'lõm' : 'lồi' }})</small></p>
+                <p class="mb-1"><small>Chiều dài tay dên: {{ connectingRodLength }} mm</small></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Các Giá Trị Tính Toán</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Số xilanh:</strong> {{ cylinderCount }}</p>
+                <p><strong>Thể tích quét (tổng):</strong> {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích quét (mỗi xilanh):</strong> {{ sweptVolume ? (sweptVolume / cylinderCount).toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Tổng thể tích xilanh:</strong> {{ totalCylinderVolume ? totalCylinderVolume.toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích gioăng (tổng):</strong> {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Thể tích khoảng hở nắp máy (tổng):</strong> {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích buồng cháy hiệu dụng (tổng):</strong> {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích buồng cháy hiệu dụng (mỗi xilanh):</strong> {{ effectiveClearanceVolume ? (effectiveClearanceVolume / cylinderCount).toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Điểm đóng xupap nạp:</strong> {{ intakeClosingPoint ? intakeClosingPoint.toFixed(1) : '0.0' }}° sau ĐCD</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <h5>Về Tính Toán Tỉ Số Nén Động Cơ</h5>
+      <p>Công cụ này giúp xác định cả tỉ số nén tĩnh và tỉ số nén động cho động cơ một xilanh. Tỉ số nén tĩnh là tỷ lệ giữa thể tích xilanh tối đa và thể tích xilanh tối thiểu, trong khi tỉ số nén động tính đến điểm đóng thực tế của xupap nạp.</p>
+      <p>Đối với động cơ hiệu suất cao, tỉ số nén động thường là thông số hữu ích hơn vì nó thể hiện chính xác hơn mức độ nén thực tế mà hỗn hợp không khí-nhiên liệu trải qua trong quá trình vận hành động cơ.</p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, watch, onMounted } = Vue;
+    
+    createApp({
+      setup() {
+        // Input values with default values for Yamaha Exciter 150cc
+        const bore = ref(57);  // mm - Đường kính xilanh Exciter 150cc
+        const stroke = ref(58.7);  // mm - Hành trình piston Exciter 150cc
+        const clearanceVolume = ref(10.1);  // cc - Ước tính thể tích buồng cháy dựa trên tỉ số nén 10.4:1
+        const deckHeight = ref(0.8);  // mm - Khoảng hở nắp máy
+        const gasketThickness = ref(0.3);  // mm - Ước tính độ dày gioăng nắp máy
+        const gasketBoreDiameter = ref(58);  // mm - Ước tính đường kính lỗ gioăng
+        const pistonDomeVolume = ref(3);  // cc - Thể tích đỉnh piston lõm đo được
+        const showDebugInfo = ref(false);  // Hiển thị thông tin debug
+        const connectingRodLength = ref(100);  // mm - Ước tính chiều dài tay dên
+        const adjustedStroke = ref(40);  // mm - Hành trình hiệu dụng từ điểm đóng xupap nạp đến ĐCT
+        const manualIntakeClosingPoint = ref(75);  // degrees ABDC - Điểm đóng xupap nạp (mặc định 75 độ sau ĐCD)
+        const autoCalculateAdjustedStroke = ref(true);  // Tự động tính hành trình hiệu dụng từ điểm đóng xupap nạp
+        
+        // Calculated values
+        const sweptVolume = computed(() => {
+          // Thể tích quét cho một xilanh
+          return Math.PI * Math.pow(bore.value / 2, 2) * stroke.value / 1000;
+        });
+        
+        const gasketVolume = computed(() => {
+          // Thể tích gioăng
+          return Math.PI * Math.pow(gasketBoreDiameter.value / 2, 2) * gasketThickness.value / 1000;
+        });
+        
+        const deckVolume = computed(() => {
+          if (deckHeight.value <= 0) return 0;
+          // Thể tích khoảng hở nắp máy
+          return Math.PI * Math.pow(bore.value / 2, 2) * deckHeight.value / 1000;
+        });
+        
+        const effectiveClearanceVolume = computed(() => {
+          // Thể tích buồng cháy hiệu dụng
+          // Lưu ý: Đã đảo ngược dấu của pistonDomeVolume - cộng thay vì trừ
+          // vì giờ đây âm là đỉnh lồi (giảm thể tích), dương là đỉnh lõm (tăng thể tích)
+          return clearanceVolume.value + gasketVolume.value + deckVolume.value + pistonDomeVolume.value;
+        });
+        
+        const totalCylinderVolume = computed(() => {
+          return sweptVolume.value + effectiveClearanceVolume.value;
+        });
+        
+        const staticCompressionRatio = computed(() => {
+          if (effectiveClearanceVolume.value <= 0) return 0;
+          return totalCylinderVolume.value / effectiveClearanceVolume.value;
+        });
+        
+        // Sử dụng điểm đóng xupap nạp được nhập trực tiếp
+        const intakeClosingPoint = computed(() => {
+          // Trả về giá trị được nhập trực tiếp
+          return manualIntakeClosingPoint.value;
+        });
+        
+        // Calculate piston position at intake closing
+        const pistonPositionAtIntakeClosing = computed(() => {
+          // Góc sau ĐCD (đã được nhập trực tiếp)
+          // Cần chuyển đổi từ góc sau ĐCD sang góc từ ĐCT
+          // ĐCD = 180 độ từ ĐCT, nên góc từ ĐCT = 180 + góc sau ĐCD
+          const angleFromTDC = 180 + intakeClosingPoint.value;
+          const angleRad = angleFromTDC * Math.PI / 180;
+          const crankOffset = stroke.value / 2;
+          
+          // Sử dụng công thức slider-crank chính xác để tính vị trí piston
+          // Công thức: s = r * (1 - cos(θ)) + (l/r) * (1 - sqrt(1 - (r/l)^2 * sin^2(θ)))
+          // Trong đó:
+          // r = bán kính trục khuỷu (= stroke/2)
+          // l = chiều dài thanh truyền
+          // θ = góc quay từ ĐCT
+          
+          const r = crankOffset;
+          const l = connectingRodLength.value;
+          const theta = angleRad;
+          
+          // Phần 1: r * (1 - cos(θ))
+          const term1 = r * (1 - Math.cos(theta));
+          
+          // Phần 2: (l/r) * (1 - sqrt(1 - (r/l)^2 * sin^2(θ)))
+          const ratio = r / l;
+          const sinTerm = Math.pow(ratio * Math.sin(theta), 2);
+          const term2 = l * (1 - Math.sqrt(1 - sinTerm));
+          
+          // Vị trí piston từ ĐCT
+          const positionFromTDC = term1 + term2;
+          
+          // Log để debug
+          console.log('Góc từ ĐCT:', angleFromTDC, 'độ');
+          console.log('Góc từ ĐCD:', intakeClosingPoint.value, 'độ');
+          console.log('Chiều dài tay dên:', l, 'mm');
+          console.log('Vị trí piston từ ĐCT:', positionFromTDC.toFixed(2), 'mm');
+          
+          return positionFromTDC;
+        });
+        
+        // Watch for changes in intake closing point and update adjusted stroke if auto-calculate is enabled
+        watch([intakeClosingPoint, pistonPositionAtIntakeClosing], () => {
+          if (autoCalculateAdjustedStroke.value) {
+            // Calculate adjusted stroke based on piston position at intake closing
+            // Hành trình hiệu dụng = Vị trí piston tại điểm đóng (không phải hành trình tổng - vị trí)
+            const newAdjustedStroke = pistonPositionAtIntakeClosing.value;
+            adjustedStroke.value = newAdjustedStroke;
+            
+            // Log để debug
+            console.log('Hành trình tổng:', stroke.value, 'mm');
+            console.log('Vị trí piston tại điểm đóng:', pistonPositionAtIntakeClosing.value.toFixed(2), 'mm');
+            console.log('Hành trình hiệu dụng:', newAdjustedStroke.toFixed(2), 'mm');
+          }
+        });
+        
+        // Initialize adjusted stroke on page load
+        onMounted(() => {
+          if (autoCalculateAdjustedStroke.value) {
+            // Calculate initial adjusted stroke based on piston position at intake closing
+            const initialAdjustedStroke = pistonPositionAtIntakeClosing.value;
+            adjustedStroke.value = initialAdjustedStroke;
+            
+            // Log để debug
+            console.log('Khởi tạo - Hành trình tổng:', stroke.value, 'mm');
+            console.log('Khởi tạo - Vị trí piston tại điểm đóng:', pistonPositionAtIntakeClosing.value.toFixed(2), 'mm');
+            console.log('Khởi tạo - Hành trình hiệu dụng:', initialAdjustedStroke.toFixed(2), 'mm');
+          }
+        });
+        
+        // Calculate effective volume per cylinder
+        const effectiveVolume = computed(() => {
+          return Math.PI * Math.pow(bore.value / 2, 2) * adjustedStroke.value / 1000;
+        });
+        
+        // Calculate dynamic compression ratio using adjusted stroke
+        const dynamicCompressionRatio = computed(() => {
+          const effectiveDisplacement = effectiveVolume.value;
+          const clearanceVol = effectiveClearanceVolume.value;
+          
+          if (clearanceVol <= 0) return 0;
+          
+          // Công thức tỉ số nén động: (Thể tích quét hiệu dụng + Thể tích buồng cháy) / Thể tích buồng cháy
+          const ratio = (effectiveDisplacement + clearanceVol) / clearanceVol;
+          
+          // Log để debug
+          console.log('Thể tích quét hiệu dụng:', effectiveDisplacement.toFixed(2), 'cc');
+          console.log('Thể tích buồng cháy:', clearanceVol.toFixed(2), 'cc');
+          console.log('Tỉ số nén động:', ratio.toFixed(2), ':1');
+          
+          return ratio;
+        });
+        
+        return {
+          // Input values
+          bore,
+          stroke,
+          clearanceVolume,
+          deckHeight,
+          gasketThickness,
+          gasketBoreDiameter,
+          pistonDomeVolume,
+          connectingRodLength,
+          adjustedStroke,
+          manualIntakeClosingPoint,
+          autoCalculateAdjustedStroke,
+          showDebugInfo,
+          
+          // Calculated values
+          sweptVolume,
+          gasketVolume,
+          deckVolume,
+          effectiveClearanceVolume,
+          totalCylinderVolume,
+          staticCompressionRatio,
+          intakeClosingPoint,
+          pistonPositionAtIntakeClosing,
+          effectiveVolume,
+          dynamicCompressionRatio
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
