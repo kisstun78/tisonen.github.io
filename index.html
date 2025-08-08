@@ -66,7 +66,7 @@
               <input type="number" id="gasketThickness" v-model="gasketThickness" class="form-control" step="0.01" min="0">
             </div>
             <div class="mb-3">
-              <label for="gasketBoreDiameter" class="form-label">Đường kính mếng ron (g) (mm):</label>
+              <label for="gasketBoreDiameter" class="form-label">Đường kính ron (g) (mm):</label>
               <input type="number" id="gasketBoreDiameter" v-model="gasketBoreDiameter" class="form-control" step="0.1" min="0">
             </div>
             <div class="mb-3">
@@ -134,7 +134,7 @@
                   <li><small>Điểm đóng xupap nạp: {{ intakeClosingPoint }} độ sau ĐCD</small></li>
                   <li><small>Vị trí piston tại điểm đóng: {{ pistonPositionAtIntakeClosing ? pistonPositionAtIntakeClosing.toFixed(2) : '0.00' }} mm từ ĐCT</small></li>
                   <li><small>Hành trình hiệu dụng = Vị trí piston tại điểm đóng: {{ adjustedStroke ? adjustedStroke.toFixed(2) : '0.00' }} mm</small></li>
-                  <li><small>Thể tích quét hiệu dụng (mỗi xilanh): {{ effectiveVolume ? effectiveVolume.toFixed(2) : '0.00' }} cc</small></li>
+                  <li><small>Thể tích quét hiệu dụng: {{ effectiveVolume ? effectiveVolume.toFixed(2) : '0.00' }} cc</small></li>
                   <li><small>Tỉ số nén động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</small></li>
                 </ol>
               </div>
@@ -164,16 +164,13 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-6">
-                <p><strong>Số xilanh:</strong> {{ cylinderCount }}</p>
-                <p><strong>Thể tích quét (tổng):</strong> {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Thể tích quét (mỗi xilanh):</strong> {{ sweptVolume ? (sweptVolume / cylinderCount).toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích quét:</strong> {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</p>
                 <p><strong>Tổng thể tích xilanh:</strong> {{ totalCylinderVolume ? totalCylinderVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Thể tích gioăng (tổng):</strong> {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích ron:</strong> {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</p>
               </div>
               <div class="col-md-6">
-                <p><strong>Thể tích khoảng hở nắp máy (tổng):</strong> {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Thể tích buồng cháy hiệu dụng (tổng):</strong> {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Thể tích buồng cháy hiệu dụng (mỗi xilanh):</strong> {{ effectiveClearanceVolume ? (effectiveClearanceVolume / cylinderCount).toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích khoảng hở nắp máy:</strong> {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</p>
+                <p><strong>Thể tích buồng cháy hiệu dụng:</strong> {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</p>
                 <p><strong>Điểm đóng xupap nạp:</strong> {{ intakeClosingPoint ? intakeClosingPoint.toFixed(1) : '0.0' }}° sau ĐCD</p>
               </div>
             </div>
@@ -200,7 +197,7 @@
         const clearanceVolume = ref(10.1);  // cc - Ước tính thể tích buồng cháy dựa trên tỉ số nén 10.4:1
         const deckHeight = ref(0.8);  // mm - Khoảng hở nắp máy
         const gasketThickness = ref(0.3);  // mm - Ước tính độ dày gioăng nắp máy
-        const gasketBoreDiameter = ref(58);  // mm - Ước tính đường kính lỗ gioăng
+        const gasketBoreDiameter = ref(58);  // mm - Ước tính đường kính ron
         const pistonDomeVolume = ref(3);  // cc - Thể tích đỉnh piston lõm đo được
         const showDebugInfo = ref(false);  // Hiển thị thông tin debug
         const connectingRodLength = ref(100);  // mm - Ước tính chiều dài tay dên
