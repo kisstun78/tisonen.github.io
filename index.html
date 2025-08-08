@@ -66,7 +66,7 @@
               <input type="number" id="gasketThickness" v-model="gasketThickness" class="form-control" step="0.01" min="0">
             </div>
             <div class="mb-3">
-              <label for="gasketBoreDiameter" class="form-label">Đường kính lỗ gioăng (g) (mm):</label>
+              <label for="gasketBoreDiameter" class="form-label">Đường kính mếng ron (g) (mm):</label>
               <input type="number" id="gasketBoreDiameter" v-model="gasketBoreDiameter" class="form-control" step="0.1" min="0">
             </div>
             <div class="mb-3">
@@ -144,7 +144,7 @@
               <button class="btn btn-sm btn-info mt-2" @click="showDebugInfo = !showDebugInfo">{{ showDebugInfo ? 'Ẩn' : 'Hiện' }} thông tin chi tiết</button>
               <div v-if="showDebugInfo" class="mt-2 p-2 bg-light">
                 <p class="mb-1"><small>Thể tích buồng cháy gốc: {{ clearanceVolume }} cc</small></p>
-                <p class="mb-1"><small>Thể tích gioăng: {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</small></p>
+                <p class="mb-1"><small>Thể tích ron: {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</small></p>
                 <p class="mb-1"><small>Thể tích khoảng hở nắp máy: {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</small></p>
                 <p class="mb-1"><small>Thể tích piston: {{ pistonDomeVolume }} cc ({{ pistonDomeVolume > 0 ? 'lõm' : 'lồi' }})</small></p>
                 <p class="mb-1"><small>Chiều dài tay dên: {{ connectingRodLength }} mm</small></p>
