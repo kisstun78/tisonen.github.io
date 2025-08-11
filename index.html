@@ -4,176 +4,385 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Máy Tính Tỉ Số Nén Động Cơ</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Material Components for Web -->
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  
   <style>
     body {
-      padding: 20px;
-      background-color: #f8f9fa;
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: rgba(0, 0, 0, 0.87);
+      min-height: 100vh;
     }
+    
     .calculator-container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: 0 auto;
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     }
+    
+    .mdc-card {
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: 16px;
+      background-color: var(--mdc-theme-primary);
+      color: var(--mdc-theme-on-primary);
+    }
+    
+    .card-header.primary {
+      background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+      color: #2d5a3d;
+    }
+    
+    .card-header.secondary {
+      background: linear-gradient(135deg, #ffd3a5 0%, #fd9853 100%);
+      color: #8b4513;
+    }
+    
+    .card-header.accent {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #4a5568;
+    }
+    
+    .card-header h5 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+    
+    .card-content {
+      padding: 16px;
+    }
+    
     .result-box {
-      background-color: #f8f9fa;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 20px;
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      border-left: 4px solid #ffb3ba;
+      box-shadow: 0 2px 10px rgba(255, 179, 186, 0.2);
     }
-    .form-label {
-      font-weight: 600;
-    }
-    .info-icon {
-      cursor: pointer;
-      color: #6c757d;
-    }
+    
     .formula-display {
-      font-family: monospace;
-      background-color: #f8f9fa;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
+      font-family: 'Roboto Mono', monospace;
+      background: linear-gradient(135deg, #f0fff4 0%, #e6ffe6 100%);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid #bae1ff;
+      box-shadow: 0 2px 8px rgba(186, 225, 255, 0.3);
+    }
+    
+    .mdc-text-field {
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    
+    .helper-text {
+      margin-bottom: 16px;
+      margin-top: 4px;
+    }
+    
+    .debug-info {
+      background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid #ffd54f;
+      box-shadow: 0 2px 8px rgba(255, 213, 79, 0.2);
+    }
+    
+    .calculation-steps {
+      background: linear-gradient(135deg, #e8f4fd 0%, #bbdefb 100%);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      border: 1px solid #90caf9;
+      box-shadow: 0 2px 8px rgba(144, 202, 249, 0.2);
+    }
+    
+    .calculation-steps ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .calculation-steps li {
+      margin-bottom: 4px;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .full-width-card {
+      grid-column: 1 / -1;
+    }
+    
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    
+    .mdc-button {
+      margin-top: 8px;
+    }
+    
+    .small-text {
+      font-size: 0.875rem;
+      color: rgba(0, 0, 0, 0.6);
+    }
+    
+    .result-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: #6b73ff;
+      margin-bottom: 8px;
+      text-shadow: 0 1px 3px rgba(107, 115, 255, 0.3);
+    }
+    
+    .app-title {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #667eea;
+      font-weight: 400;
+      text-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+      font-size: 2rem;
     }
   </style>
 </head>
 <body>
   <div id="app" class="calculator-container">
-    <h1 class="text-center mb-4">Máy Tính Tỉ Số Nén Động Cơ</h1>
+    <h1 class="app-title">Máy Tính Tỉ Số Nén Động Cơ</h1>
     
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Tỉ Số Nén Tĩnh</h5>
-          </div>
-          <div class="card-body">
-
-            <div class="mb-3">
-              <label for="bore" class="form-label">Đường kính xilanh (b) (mm):</label>
-              <input type="number" id="bore" v-model="bore" class="form-control" step="0.1" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="stroke" class="form-label">Hành trình piston (s) (mm):</label>
-              <input type="number" id="stroke" v-model="stroke" class="form-control" step="0.1" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="gasketThickness" class="form-label">Độ dày gioăng nắp máy (Độ dày miếng ron) (mm):</label>
-              <input type="number" id="gasketThickness" v-model="gasketThickness" class="form-control" step="0.01" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="gasketBoreDiameter" class="form-label">Đường kính ron (g) (mm):</label>
-              <input type="number" id="gasketBoreDiameter" v-model="gasketBoreDiameter" class="form-control" step="0.1" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="deckHeight" class="form-label">Khoảng hở nắp máy (Hụt mặt lòng) (c) (mm):</label>
-              <input type="number" id="deckHeight" v-model="deckHeight" class="form-control" step="0.1" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="clearanceVolume" class="form-label">Thể tích buồng cháy (Bao nhiêu nước trong cái đầu) (cc):</label>
-              <input type="number" id="clearanceVolume" v-model="clearanceVolume" class="form-control" step="0.1" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="pistonDomeVolume" class="form-label">Thể tích piston (Piston volume) (cc):</label>
-              <input type="number" id="pistonDomeVolume" v-model="pistonDomeVolume" class="form-control" step="0.1">
-              <small class="text-muted">Âm nếu đỉnh lồi, dương nếu đỉnh lõm</small>
-            </div>
-            
-            <div class="result-box">
-              <h5>Tỉ Số Nén Tĩnh: {{ staticCompressionRatio ? staticCompressionRatio.toFixed(2) : '0.00' }}:1</h5>
-              <div class="formula-display">
-                TSN = (Thể tích quét + Thể tích buồng cháy) / Thể tích buồng cháy
+    <div class="grid-container">
+      <div class="mdc-card">
+        <div class="card-header primary">
+          <h5>Tỉ Số Nén Tĩnh</h5>
+        </div>
+        <div class="card-content">
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="bore" v-model="bore" class="mdc-text-field__input" step="0.1" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="bore" class="mdc-floating-label">Đường kính xilanh (b) (mm)</label>
               </div>
-              <p class="mt-2 mb-0"><small>Thể tích quét: {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</small></p>
-              <p class="mt-1 mb-0"><small>Thể tích buồng cháy: {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</small></p>
+              <div class="mdc-notched-outline__trailing"></div>
             </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="stroke" v-model="stroke" class="mdc-text-field__input" step="0.1" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="stroke" class="mdc-floating-label">Hành trình piston (s) (mm)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="gasketThickness" v-model="gasketThickness" class="mdc-text-field__input" step="0.01" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="gasketThickness" class="mdc-floating-label">Độ dày gioăng nắp máy (mm)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="gasketBoreDiameter" v-model="gasketBoreDiameter" class="mdc-text-field__input" step="0.1" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="gasketBoreDiameter" class="mdc-floating-label">Đường kính ron (g) (mm)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="deckHeight" v-model="deckHeight" class="mdc-text-field__input" step="0.1" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="deckHeight" class="mdc-floating-label">Khoảng hở nắp máy (c) (mm)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="clearanceVolume" v-model="clearanceVolume" class="mdc-text-field__input" step="0.1" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="clearanceVolume" class="mdc-floating-label">Thể tích buồng cháy (cc)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="pistonDomeVolume" v-model="pistonDomeVolume" class="mdc-text-field__input" step="0.1">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="pistonDomeVolume" class="mdc-floating-label">Thể tích piston (cc)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          <div class="small-text helper-text">Âm nếu đỉnh lồi, dương nếu đỉnh lõm</div>
+          
+          <div class="result-box">
+            <div class="result-title">Tỉ Số Nén Tĩnh: {{ staticCompressionRatio ? staticCompressionRatio.toFixed(2) : '0.00' }}:1</div>
+            <div class="formula-display">
+              TSN = (Thể tích quét + Thể tích buồng cháy) / Thể tích buồng cháy
+            </div>
+            <div class="small-text" style="margin-top: 8px;">Thể tích quét: {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</div>
+            <div class="small-text">Thể tích buồng cháy: {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</div>
           </div>
         </div>
       </div>
       
-      <div class="col-md-6">
-        <div class="card h-100">
-          <div class="card-header bg-success text-white">
-            <h5 class="mb-0">Tỉ Số Nén Động</h5>
-          </div>
-          <div class="card-body">
-            <div class="mb-3">
-              <label for="intakeClosingPoint" class="form-label">1. Điểm đóng xupap nạp (Intake valve closing point) (độ sau ĐCD):</label>
-              <input type="number" id="intakeClosingPoint" v-model="manualIntakeClosingPoint" class="form-control" step="1" min="0" max="90">
-              <small class="text-muted">Giá trị từ 0 đến 90 độ sau ĐCD</small>
-            </div>
-            <div class="mb-3">
-              <label for="connectingRodLength" class="form-label">2. Chiều dài tay dên (Rod length) (mm):</label>
-              <input type="number" id="connectingRodLength" v-model="connectingRodLength" class="form-control" step="0.1" min="0">
-            </div>
-            <div class="mb-3">
-              <label for="adjustedStroke" class="form-label">3. Hành trình hiệu dụng (Adjusted stroke) (mm):</label>
-              <input type="number" id="adjustedStroke" v-model="adjustedStroke" class="form-control" step="0.1" min="0" :disabled="autoCalculateAdjustedStroke">
-              <div class="form-check mt-1">
-                <input class="form-check-input" type="checkbox" id="autoCalculateStroke" v-model="autoCalculateAdjustedStroke" checked>
-                <label class="form-check-label" for="autoCalculateStroke">
-                  Tự động tính từ điểm đóng xupap nạp
-                </label>
+      <div class="mdc-card">
+        <div class="card-header secondary">
+          <h5>Tỉ Số Nén Động</h5>
+        </div>
+        <div class="card-content">
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="intakeClosingPoint" v-model="manualIntakeClosingPoint" class="mdc-text-field__input" step="1" min="0" max="90">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="intakeClosingPoint" class="mdc-floating-label">Điểm đóng xupap nạp (độ sau ĐCD)</label>
               </div>
-              <small class="text-muted">Khoảng cách từ piston đến ĐCT tại thời điểm đóng xupap nạp</small>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          <div class="small-text helper-text">Giá trị từ 0 đến 90 độ sau ĐCD</div>
+
+          <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="number" id="connectingRodLength" v-model="connectingRodLength" class="mdc-text-field__input" step="0.1" min="0">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="connectingRodLength" class="mdc-floating-label">Chiều dài tay dên (mm)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-text-field mdc-text-field--outlined" :class="{ 'mdc-text-field--disabled': autoCalculateAdjustedStroke }">
+            <input type="number" id="adjustedStroke" v-model="adjustedStroke" class="mdc-text-field__input" step="0.1" min="0" :disabled="autoCalculateAdjustedStroke">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="adjustedStroke" class="mdc-floating-label">Hành trình hiệu dụng (mm)</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="mdc-form-field">
+            <div class="mdc-checkbox">
+              <input type="checkbox" class="mdc-checkbox__native-control" id="autoCalculateStroke" v-model="autoCalculateAdjustedStroke" checked>
+              <div class="mdc-checkbox__background">
+                <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                  <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                </svg>
+                <div class="mdc-checkbox__mixedmark"></div>
+              </div>
+              <div class="mdc-checkbox__ripple"></div>
+            </div>
+            <label for="autoCalculateStroke">Tự động tính từ điểm đóng xupap nạp</label>
+          </div>
+          <div class="small-text helper-text">Khoảng cách từ piston đến ĐCT tại thời điểm đóng xupap nạp</div>
+          
+          <div class="result-box">
+            <div class="result-title">Tỉ Số Nén Động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</div>
+            <div class="formula-display">
+              TSND = (Thể tích quét hiệu dụng + Thể tích buồng cháy) / Thể tích buồng cháy
             </div>
             
-            <div class="result-box">
-              <h5>Tỉ Số Nén Động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</h5>
-              <div class="formula-display">
-                TSND = (Thể tích quét hiệu dụng + Thể tích buồng cháy) / Thể tích buồng cháy
-              </div>
-              
-              <div class="mt-3">
-                <h6>Thứ tự tính toán:</h6>
-                <ol class="mb-3">
-                  <li><small>Điểm đóng xupap nạp: {{ intakeClosingPoint }} độ sau ĐCD</small></li>
-                  <li><small>Vị trí piston tại điểm đóng: {{ pistonPositionAtIntakeClosing ? pistonPositionAtIntakeClosing.toFixed(2) : '0.00' }} mm từ ĐCT</small></li>
-                  <li><small>Hành trình hiệu dụng = Vị trí piston tại điểm đóng: {{ adjustedStroke ? adjustedStroke.toFixed(2) : '0.00' }} mm</small></li>
-                  <li><small>Thể tích quét hiệu dụng: {{ effectiveVolume ? effectiveVolume.toFixed(2) : '0.00' }} cc</small></li>
-                  <li><small>Tỉ số nén động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</small></li>
-                </ol>
-              </div>
-              
-              <p class="mt-1 mb-0"><small>Thể tích buồng cháy: {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</small></p>
-              
-              <button class="btn btn-sm btn-info mt-2" @click="showDebugInfo = !showDebugInfo">{{ showDebugInfo ? 'Ẩn' : 'Hiện' }} thông tin chi tiết</button>
-              <div v-if="showDebugInfo" class="mt-2 p-2 bg-light">
-                <p class="mb-1"><small>Thể tích buồng cháy gốc: {{ clearanceVolume }} cc</small></p>
-                <p class="mb-1"><small>Thể tích ron: {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</small></p>
-                <p class="mb-1"><small>Thể tích khoảng hở nắp máy: {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</small></p>
-                <p class="mb-1"><small>Thể tích piston: {{ pistonDomeVolume }} cc ({{ pistonDomeVolume > 0 ? 'lõm' : 'lồi' }})</small></p>
-                <p class="mb-1"><small>Chiều dài tay dên: {{ connectingRodLength }} mm</small></p>
-              </div>
+            <div class="calculation-steps">
+              <h6 style="margin: 0 0 8px 0; font-weight: 500;">Thứ tự tính toán:</h6>
+              <ol>
+                <li class="small-text">Điểm đóng xupap nạp: {{ intakeClosingPoint }} độ sau ĐCD</li>
+                <li class="small-text">Vị trí piston tại điểm đóng: {{ pistonPositionAtIntakeClosing ? pistonPositionAtIntakeClosing.toFixed(2) : '0.00' }} mm từ ĐCT</li>
+                <li class="small-text">Hành trình hiệu dụng = Vị trí piston tại điểm đóng: {{ adjustedStroke ? adjustedStroke.toFixed(2) : '0.00' }} mm</li>
+                <li class="small-text">Thể tích quét hiệu dụng: {{ effectiveVolume ? effectiveVolume.toFixed(2) : '0.00' }} cc</li>
+                <li class="small-text">Tỉ số nén động: {{ dynamicCompressionRatio ? dynamicCompressionRatio.toFixed(2) : '0.00' }}:1</li>
+              </ol>
+            </div>
+            
+            <div class="small-text" style="margin-top: 8px;">Thể tích buồng cháy: {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</div>
+            
+            <button class="mdc-button mdc-button--outlined" @click="showDebugInfo = !showDebugInfo">
+              <span class="mdc-button__ripple"></span>
+              <span class="mdc-button__label">{{ showDebugInfo ? 'Ẩn' : 'Hiện' }} thông tin chi tiết</span>
+            </button>
+            
+            <div v-if="showDebugInfo" class="debug-info">
+              <div class="small-text">Thể tích buồng cháy gốc: {{ clearanceVolume }} cc</div>
+              <div class="small-text">Thể tích ron: {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</div>
+              <div class="small-text">Thể tích khoảng hở nắp máy: {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</div>
+              <div class="small-text">Thể tích piston: {{ pistonDomeVolume }} cc ({{ pistonDomeVolume > 0 ? 'lõm' : 'lồi' }})</div>
+              <div class="small-text">Chiều dài tay dên: {{ connectingRodLength }} mm</div>
             </div>
           </div>
         </div>
       </div>
     </div>
     
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Các Giá Trị Tính Toán</h5>
+    <div class="mdc-card full-width-card">
+      <div class="card-header accent">
+        <h5>Các Giá Trị Tính Toán</h5>
+      </div>
+      <div class="card-content">
+        <div class="values-grid">
+          <div>
+            <div style="font-weight: 500; margin-bottom: 4px;">Thể tích quét:</div>
+            <div class="small-text">{{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</div>
           </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <p><strong>Thể tích quét:</strong> {{ sweptVolume ? sweptVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Tổng thể tích xilanh:</strong> {{ totalCylinderVolume ? totalCylinderVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Thể tích ron:</strong> {{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</p>
-              </div>
-              <div class="col-md-6">
-                <p><strong>Thể tích khoảng hở nắp máy:</strong> {{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Thể tích buồng cháy hiệu dụng:</strong> {{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</p>
-                <p><strong>Điểm đóng xupap nạp:</strong> {{ intakeClosingPoint ? intakeClosingPoint.toFixed(1) : '0.0' }}° sau ĐCD</p>
-              </div>
-            </div>
+          <div>
+            <div style="font-weight: 500; margin-bottom: 4px;">Tổng thể tích xilanh:</div>
+            <div class="small-text">{{ totalCylinderVolume ? totalCylinderVolume.toFixed(2) : '0.00' }} cc</div>
+          </div>
+          <div>
+            <div style="font-weight: 500; margin-bottom: 4px;">Thể tích ron:</div>
+            <div class="small-text">{{ gasketVolume ? gasketVolume.toFixed(2) : '0.00' }} cc</div>
+          </div>
+          <div>
+            <div style="font-weight: 500; margin-bottom: 4px;">Thể tích khoảng hở nắp máy:</div>
+            <div class="small-text">{{ deckVolume ? deckVolume.toFixed(2) : '0.00' }} cc</div>
+          </div>
+          <div>
+            <div style="font-weight: 500; margin-bottom: 4px;">Thể tích buồng cháy hiệu dụng:</div>
+            <div class="small-text">{{ effectiveClearanceVolume ? effectiveClearanceVolume.toFixed(2) : '0.00' }} cc</div>
+          </div>
+          <div>
+            <div style="font-weight: 500; margin-bottom: 4px;">Điểm đóng xupap nạp:</div>
+            <div class="small-text">{{ intakeClosingPoint ? intakeClosingPoint.toFixed(1) : '0.0' }}° sau ĐCD</div>
           </div>
         </div>
       </div>
@@ -299,19 +508,6 @@
           }
         });
         
-        // Initialize adjusted stroke on page load
-        onMounted(() => {
-          if (autoCalculateAdjustedStroke.value) {
-            // Calculate initial adjusted stroke based on piston position at intake closing
-            const initialAdjustedStroke = pistonPositionAtIntakeClosing.value;
-            adjustedStroke.value = initialAdjustedStroke;
-            
-            // Log để debug
-            console.log('Khởi tạo - Hành trình tổng:', stroke.value, 'mm');
-            console.log('Khởi tạo - Vị trí piston tại điểm đóng:', pistonPositionAtIntakeClosing.value.toFixed(2), 'mm');
-            console.log('Khởi tạo - Hành trình hiệu dụng:', initialAdjustedStroke.toFixed(2), 'mm');
-          }
-        });
         
         // Calculate effective volume per cylinder
         const effectiveVolume = computed(() => {
@@ -336,6 +532,47 @@
           return ratio;
         });
         
+        // Initialize Material Design components after Vue is mounted
+        onMounted(() => {
+          if (autoCalculateAdjustedStroke.value) {
+            // Calculate initial adjusted stroke based on piston position at intake closing
+            const initialAdjustedStroke = pistonPositionAtIntakeClosing.value;
+            adjustedStroke.value = initialAdjustedStroke;
+            
+            // Log để debug
+            console.log('Khởi tạo - Hành trình tổng:', stroke.value, 'mm');
+            console.log('Khởi tạo - Vị trí piston tại điểm đóng:', pistonPositionAtIntakeClosing.value.toFixed(2), 'mm');
+            console.log('Khởi tạo - Hành trình hiệu dụng:', initialAdjustedStroke.toFixed(2), 'mm');
+          }
+          
+          // Initialize Material Design Components
+          setTimeout(() => {
+            // Initialize text fields
+            const textFields = document.querySelectorAll('.mdc-text-field');
+            textFields.forEach(textField => {
+              mdc.textField.MDCTextField.attachTo(textField);
+            });
+            
+            // Initialize buttons
+            const buttons = document.querySelectorAll('.mdc-button');
+            buttons.forEach(button => {
+              mdc.ripple.MDCRipple.attachTo(button);
+            });
+            
+            // Initialize checkboxes
+            const checkboxes = document.querySelectorAll('.mdc-checkbox');
+            checkboxes.forEach(checkbox => {
+              mdc.checkbox.MDCCheckbox.attachTo(checkbox);
+            });
+            
+            // Initialize form fields
+            const formFields = document.querySelectorAll('.mdc-form-field');
+            formFields.forEach(formField => {
+              mdc.formField.MDCFormField.attachTo(formField);
+            });
+          }, 100);
+        });
+
         return {
           // Input values
           bore,
